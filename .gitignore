@@ -1,0 +1,23 @@
+# Archivos generados por Maven
+target/
+
+# Configuracion local de IntelliJ IDEA
+.idea/
+*.iml
+
+# Archivos compilados
+*.class
+
+# Historiales y cache de asistentes de codigo
+.aider*
+
+# Archivos locales de datos o pruebas
+*.xlsx
+*.xls
+*.csv
+*.json
+*.db
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
