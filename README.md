@@ -89,5 +89,14 @@ Para que la importación masiva de datos funcione correctamente, los archivos de
 
 ## Estado del proyecto
 
-*   **Versión actual:** 1.0 (Funcional).
+*   **Versión actual:** 1.0.1 (Funcional).
 *   Desarrollado inicialmente como un anteproyecto escolar enfocado en bases de datos No Relacionales.
+
+## Historial de cambios
+
+### 1.0.1
+
+- Se corrigió la asociación de alumnos con aulas durante la importación masiva.
+- Se corrigieron los contadores del resumen de importación.
+- Se corrigió la generación de nombres seguros para archivos PDF.
+- Se cerraron correctamente los archivos Excel después de importarlos.
