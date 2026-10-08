@@ -86,6 +86,7 @@ Para que la importación masiva de datos funcione correctamente, los archivos de
 - [ ] Panel de seguimiento académico detallado.
 - [ ] Estadísticas gráficas avanzadas para el sector directivo.
 - [ ] Migración a una configuración externa para la cadena de conexión de MongoDB.
+- [ ] Rediseño completo de la interfaz gráfica (migración a JavaFX, una tecnología web o uso de frameworks modernos de UI).
 
 ## Estado del proyecto
 
