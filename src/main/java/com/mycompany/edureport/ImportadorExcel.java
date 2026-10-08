@@ -1,5 +1,4 @@
 package com.mycompany.edureport;
-
 import com.mycompany.edureport.dao.AlumnoDAO;
 import com.mycompany.edureport.dao.AulaDAO;
 import com.mycompany.edureport.modelo.Aula;
@@ -83,28 +82,44 @@ public class ImportadorExcel {
         alRefrescar.run();
     }
 
+    // Importa aulas y alumnos en un solo paso; la primera fila se trata como encabezado.
     public static void importarAulasYAlumnos(JFrame parent, AulaDAO aulaDAO,
                                              AlumnoDAO alumnoDAO, Runnable alRefrescar) {
         String ruta = seleccionarArchivo(parent);
         if (ruta == null) return;
 
         List<String> errores = new ArrayList<>();
-        int aulasCreadas = 0;
-        int alumnosInsertados = 0;
         Map<String, String> aulasMap = new LinkedHashMap<>();
+        ImportacionResultado resultado;
 
-        try {
-            Workbook workbook = leerArchivo(ruta);
+        // Se abre el archivo y se procesa la primera hoja; los errores se acumulan para mostrarlos al final.
+        try (Workbook workbook = leerArchivo(ruta)) {
             Sheet hoja = workbook.getSheetAt(0);
-            procesarFilas(hoja, aulaDAO, alumnoDAO, errores, aulasMap, aulasCreadas, alumnosInsertados);
+
+            resultado = procesarFilas(
+                hoja,
+                aulaDAO,
+                alumnoDAO,
+                errores,
+                aulasMap
+            );
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(parent,
-                    "Error al leer el archivo:\n" + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                parent,
+                "Error al leer el archivo:\n" + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
             return;
         }
 
-        mostrarResumen(parent, errores, alumnosInsertados, aulasCreadas);
+        mostrarResumen(
+            parent,
+            errores,
+            resultado.alumnosInsertados,
+            resultado.aulasCreadas
+        );
+
         alRefrescar.run();
     }
 
@@ -125,13 +140,24 @@ public class ImportadorExcel {
         }
     }
 
-    private static void procesarFilas(Sheet hoja, AulaDAO aulaDAO, AlumnoDAO alumnoDAO,
-                                       List<String> errores, Map<String, String> aulasMap,
-                                       int aulasCreadas, int alumnosInsertados) {
+    // Separa la lógica de procesamiento de filas para facilitar pruebas unitarias y mantener el método principal limpio.
+    private static ImportacionResultado procesarFilas(
+        Sheet hoja,
+        AulaDAO aulaDAO,
+        AlumnoDAO alumnoDAO,
+        List<String> errores,
+        Map<String, String> aulasMap) {
+
         int filaNum = 0;
+        int aulasCreadas = 0;
+        int alumnosInsertados = 0;
 
         for (Row fila : hoja) {
-            if (filaNum == 0) { filaNum++; continue; }
+            if (filaNum == 0) {
+                filaNum++;
+                continue;
+            }
+
             filaNum++;
 
             try {
@@ -142,26 +168,33 @@ public class ImportadorExcel {
                 }
 
                 String especialidad = getCeldaString(fila.getCell(0));
-                int    grado        = (int) getCeldaNumero(fila.getCell(1));
-                String grupo        = getCeldaString(fila.getCell(2));
-                String turno        = getCeldaString(fila.getCell(3));
-                String nombre       = getCeldaString(fila.getCell(4));
-                String apellido     = getCeldaString(fila.getCell(5));
-                int    edad         = (int) getCeldaNumero(fila.getCell(6));
+                int grado = (int) getCeldaNumero(fila.getCell(1));
+                String grupo = getCeldaString(fila.getCell(2));
+                String turno = getCeldaString(fila.getCell(3));
+                String nombre = getCeldaString(fila.getCell(4));
+                String apellido = getCeldaString(fila.getCell(5));
+                int edad = (int) getCeldaNumero(fila.getCell(6));
 
-                if (especialidad.isEmpty() || grupo.isEmpty() || turno.isEmpty()
-                        || nombre.isEmpty() || apellido.isEmpty()) {
+                if (especialidad.isEmpty()
+                    || grupo.isEmpty()
+                    || turno.isEmpty()
+                    || nombre.isEmpty()
+                    || apellido.isEmpty()) {
                     errores.add("Fila " + filaNum + ": hay campos vacíos.");
                     continue;
                 }
 
                 String claveAula = especialidad + "|" + grado + "|" + grupo + "|" + turno;
 
-                // El mapa evita crear varias aulas cuando varias filas pertenecen al mismo grupo.
+                // Se reutiliza el ID devuelto por MongoDB, no el último aula de una lista.
                 if (!aulasMap.containsKey(claveAula)) {
-                    aulaDAO.insertar(especialidad, grado, grupo, turno);
-                    List<Aula> aulas = aulaDAO.obtenerTodas();
-                    String nuevoId = aulas.get(aulas.size() - 1).getId();
+                    String nuevoId = aulaDAO.insertar(
+                        especialidad,
+                        grado,
+                        grupo,
+                        turno
+                    );
+
                     aulasMap.put(claveAula, nuevoId);
                     aulasCreadas++;
                 }
@@ -174,9 +207,21 @@ public class ImportadorExcel {
                 errores.add("Fila " + filaNum + ": " + e.getMessage());
             }
         }
+
+        return new ImportacionResultado(aulasCreadas, alumnosInsertados);
     }
 
-    // Centralizar la conversión evita repetir el tratamiento de celdas vacías o numéricas.
+    // ahora devuelve un objeto con ambos contadores para evitar confusión de variables.
+    private static class ImportacionResultado {
+        private final int aulasCreadas;
+        private final int alumnosInsertados;
+
+        private ImportacionResultado(int aulasCreadas, int alumnosInsertados) {
+            this.aulasCreadas = aulasCreadas;
+            this.alumnosInsertados = alumnosInsertados;
+        }
+    }
+
     private static String getCeldaString(Cell celda) {
         if (celda == null) return "";
         switch (celda.getCellType()) {

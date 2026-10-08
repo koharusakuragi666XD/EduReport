@@ -49,7 +49,7 @@ public class AulaDAO {
     }
 
     /** Crea un aula y deja que MongoDB genere su identificador. */
-    public void insertar(String especialidad, int grado, String grupo, String turno) {
+    public String insertar(String especialidad, int grado, String grupo, String turno) {
         // Las relaciones se guardan mediante ObjectId en los documentos relacionados.
         Document doc = new Document()
             .append("especialidad", especialidad)
@@ -57,6 +57,8 @@ public class AulaDAO {
             .append("grupo", grupo)
             .append("turno", turno);
         coleccion.insertOne(doc);
+        //ahora devuelve el id generado por MongoDB para que la interfaz pueda usarlo.
+        return doc.getObjectId("_id").toString();
     }
 
     /** Elimina solo el aula; la limpieza de alumnos y reportes la coordina Interfaz. */

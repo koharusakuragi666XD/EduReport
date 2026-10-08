@@ -37,10 +37,11 @@ public class GeneradorPDF {
                                                ReporteDAO reporteDAO) throws Exception {
         // El archivo se guarda en la carpeta personal del usuario para evitar depender
         // de una ruta fija del proyecto o de permisos de escritura especiales.
-        String nombreArchivo = "Reporte_" + aula.getEspecialidad().replace(" ", "_")
-                + "_" + aula.getGrado() + aula.getGrupo()
-                + "_" + aula.getTurno() + ".pdf";
-
+        String nombreArchivo = (
+            "Reporte_" + aula.getEspecialidad().replace(" ", "_") +
+            "_" + aula.getGrado() + "°_" + aula.getGrupo() +
+            "_" + aula.getTurno()
+            ).replaceAll("[^a-zA-Z0-9_]", "") + ".pdf";
         String ruta = System.getProperty("user.home") + "/" + nombreArchivo;
 
         Document documento = new Document(PageSize.A4, 40, 40, 60, 40);
