@@ -1,8 +1,9 @@
 # EduReport
 
-![Java](https://shields.io)
-![MongoDB](https://shields.io)
-![Maven](https://shields.io)
+[![Java](https://shields.io)](https://oracle.com)
+[![MongoDB](https://shields.io)](https://mongodb.com)
+[![Maven](https://shields.io)](https://apache.org)
+[![License: MIT](https://shields.io)](https://opensource.org)
 
 EduReport es una aplicación de escritorio desarrollada en **Java Swing** diseñada para administrar de manera eficiente aulas, alumnos e incidencias escolares.
 
