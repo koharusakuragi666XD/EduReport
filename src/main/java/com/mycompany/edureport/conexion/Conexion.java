@@ -8,6 +8,8 @@ package com.mycompany.edureport.conexion;
  * @author sergio
  */
 
+import java.util.ArrayList;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
@@ -21,10 +23,12 @@ public class Conexion {
     private static MongoDatabase baseDeDatos;
     
     public static MongoDatabase getBaseDeDatos() {
+        //hay que proteger este if (cliente ==null) o se rompe todo
         if (cliente == null) {
             // Se reutiliza un unico cliente para que todos los DAO compartan la conexion.
             cliente = MongoClients.create(URL);
             baseDeDatos = cliente.getDatabase(NOMBRE_BD);
+            //Aviso de que la conexion fue exitosa
             System.out.println("Conexion exitosa a MongoDB");
         }
         return baseDeDatos;

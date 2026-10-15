@@ -25,8 +25,9 @@ EduReport es una aplicación de escritorio desarrollada en **Java Swing** diseñ
 ## Requisitos previos
 
 Antes de comenzar, asegúrate de contar con lo siguiente:
-- **JDK** compatible con la versión indicada en el archivo `pom.xml`.
-- **Apache Maven** instalado y configurado.
+- **Windows 10/11**.
+- **JDK 21 LTS** instalado y `JAVA_HOME` configurado.
+- **Apache Maven 3.9+** instalado y disponible en `PATH`.
 - **MongoDB** ejecutándose localmente en el puerto predeterminado `27017`.
 
 ## Instalación y configuración
@@ -46,18 +47,21 @@ Sigue estos pasos para clonar y preparar el proyecto:
 3. **Verificar la base de datos:**
    Asegúrate de que tu servicio de MongoDB esté activo. El sistema creará o utilizará automáticamente la base de datos llamada `"edureport"`.
 
-4. **Compilar el proyecto:**
-   Genera el empaquetado del proyecto ejecutando:
-   ```bash
+4. **Compilar el proyecto en Windows:**
+   Abre `cmd.exe` en la carpeta del proyecto y ejecuta:
+   ```bat
    mvn clean package
    ```
 
 ## Ejecución
 
-Para iniciar la aplicación, abre el proyecto en tu IDE favorito compatible con Maven (como NetBeans, IntelliJ IDEA o Eclipse) y ejecuta la clase principal:
-```text
-com.mycompany.edureport.EduReport
+En Windows, desde `cmd.exe` y la carpeta del proyecto, ejecuta:
+```bat
+java -jar target\EduReport-1.1.0.jar
 ```
+
+El JAR generado incluye las dependencias necesarias. Si MongoDB no está disponible,
+la aplicación mostrará un error y terminará sin mostrar una excepción no controlada.
 
 ---
 
@@ -90,10 +94,17 @@ Para que la importación masiva de datos funcione correctamente, los archivos de
 
 ## Estado del proyecto
 
-*   **Versión actual:** 1.0.1 (Funcional).
+*   **Versión actual:** 1.1.0 (Funcional).
 *   Desarrollado inicialmente como un anteproyecto escolar enfocado en bases de datos No Relacionales.
 
 ## Historial de cambios
+
+### 1.1.0
+
+- Se documentó el soporte para Windows 10/11.
+- Se cambió el requisito de Java 26 a Java 21 LTS.
+- Se agregó la generación de un JAR ejecutable con las dependencias incluidas.
+- Se mejoró el mensaje mostrado cuando MongoDB no está disponible.
 
 ### 1.0.1
 
