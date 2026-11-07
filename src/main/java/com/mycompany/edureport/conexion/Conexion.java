@@ -16,11 +16,16 @@ import com.mongodb.client.MongoDatabase;
 
 public class Conexion {
     
-    private static final String URL = "mongodb://localhost:27017";
-    private static final String NOMBRE_BD = "edureport";
+    private static final String URL = configuracion("EDUREPORT_MONGODB_URI", "mongodb://localhost:27017");
+    private static final String NOMBRE_BD = configuracion("EDUREPORT_MONGODB_DATABASE", "edureport");
     
     private static MongoClient cliente;
     private static MongoDatabase baseDeDatos;
+
+    private static String configuracion(String nombre, String valorPredeterminado) {
+        String valor = System.getenv(nombre);
+        return valor == null || valor.isBlank() ? valorPredeterminado : valor.trim();
+    }
     
     public static MongoDatabase getBaseDeDatos() {
         //hay que proteger este if (cliente ==null) o se rompe todo

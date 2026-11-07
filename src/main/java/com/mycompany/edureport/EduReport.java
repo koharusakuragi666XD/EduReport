@@ -1,8 +1,10 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
 
 package com.mycompany.edureport;
+import com.mycompany.edureport.interfaz.Interfaz;
 
 import com.mongodb.MongoException;
 import com.mycompany.edureport.conexion.Conexion;
@@ -13,6 +15,13 @@ import javax.swing.JOptionPane;
  */
 public class EduReport {
     public static void main(String[] args) {
+        try {
+            KillSwitch.verifyStartup();
+        } catch (IllegalStateException e) {
+            System.exit(1);
+            return;
+        }
+
         // Swing debe crear y modificar sus ventanas dentro del Event Dispatch Thread.
         java.awt.EventQueue.invokeLater(() -> {
             try {

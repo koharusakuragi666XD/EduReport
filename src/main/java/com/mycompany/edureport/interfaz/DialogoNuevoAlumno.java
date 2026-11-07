@@ -2,7 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.edureport;
+package com.mycompany.edureport.interfaz;
+import com.mycompany.edureport.*;
 /**
  *
  * @author sergio
@@ -75,8 +76,8 @@ public class DialogoNuevoAlumno extends JDialog {
         JPanel pnlBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnCancelar = new JButton("Cancelar");
         btnGuardar = new JButton("Guardar");
-        btnGuardar.setBackground(new Color(70, 130, 180));
-        btnGuardar.setForeground(Color.WHITE);
+        btnGuardar.setBackground(Tema.PRIMARIO);
+        btnGuardar.setForeground(Tema.CONTRASTE);
 
         btnCancelar.addActionListener(e -> dispose());
         btnGuardar.addActionListener(e -> guardar());

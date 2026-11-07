@@ -13,6 +13,7 @@ EduReport es una aplicación de escritorio desarrollada en **Java Swing** diseñ
 - **Importación masiva:** Carga de alumnos de manera rápida desde archivos Excel.
 - **Reportes:** Generación automática de reportes en formato PDF.
 - **Persistencia:** Almacenamiento seguro de toda la información en MongoDB.
+- **Temas visuales:** Alternancia en vivo entre las paletas Catppuccin Latte y Mocha.
 
 ## Tecnologías utilizadas
 
@@ -47,7 +48,18 @@ Sigue estos pasos para clonar y preparar el proyecto:
 3. **Verificar la base de datos:**
    Asegúrate de que tu servicio de MongoDB esté activo. El sistema creará o utilizará automáticamente la base de datos llamada `"edureport"`.
 
-4. **Compilar el proyecto en Windows:**
+4. **Configurar MongoDB opcionalmente:**
+   La aplicación usa `mongodb://localhost:27017` y la base de datos `edureport` por defecto. Para personalizar estos valores, copia `.env.example` como referencia y define las variables en tu entorno:
+   - `EDUREPORT_MONGODB_URI`
+   - `EDUREPORT_MONGODB_DATABASE`
+
+   En Windows puedes definirlas en `cmd.exe` antes de ejecutar:
+   ```bat
+   set EDUREPORT_MONGODB_URI=mongodb://localhost:27017
+   set EDUREPORT_MONGODB_DATABASE=edureport
+   ```
+
+5. **Compilar el proyecto en Windows:**
    Abre `cmd.exe` en la carpeta del proyecto y ejecuta:
    ```bat
    mvn clean package
@@ -62,6 +74,8 @@ java -jar target\EduReport-1.1.0.jar
 
 El JAR generado incluye las dependencias necesarias. Si MongoDB no está disponible,
 la aplicación mostrará un error y terminará sin mostrar una excepción no controlada.
+
+En la interfaz principal puedes alternar entre el modo claro **Catppuccin Latte** y el modo oscuro **Catppuccin Mocha** mediante el botón de sol/luna. El cambio también está disponible desde la pantalla de alumnos.
 
 ---
 
@@ -89,7 +103,6 @@ Para que la importación masiva de datos funcione correctamente, los archivos de
 - [ ] Módulo para el control de asistencia.
 - [ ] Panel de seguimiento académico detallado.
 - [ ] Estadísticas gráficas avanzadas para el sector directivo.
-- [ ] Migración a una configuración externa para la cadena de conexión de MongoDB.
 - [ ] Rediseño completo de la interfaz gráfica (migración a JavaFX, una tecnología web o uso de frameworks modernos de UI).
 
 ## Estado del proyecto

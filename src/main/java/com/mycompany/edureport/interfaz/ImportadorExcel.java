@@ -1,4 +1,5 @@
-package com.mycompany.edureport;
+package com.mycompany.edureport.interfaz;
+import com.mycompany.edureport.*;
 import com.mycompany.edureport.dao.AlumnoDAO;
 import com.mycompany.edureport.dao.AulaDAO;
 import com.mycompany.edureport.modelo.Aula;

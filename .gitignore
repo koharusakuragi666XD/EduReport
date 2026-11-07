@@ -18,6 +18,12 @@ target/
 *.json
 *.db
 
+# Configuración local con credenciales
+.env
+.env.local
+.env.*.local
+!.env.example
+
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
