@@ -69,7 +69,7 @@ Sigue estos pasos para clonar y preparar el proyecto:
 
 En Windows, desde `cmd.exe` y la carpeta del proyecto, ejecuta:
 ```bat
-java -jar target\EduReport-1.1.0.jar
+java -jar target\EduReport-1.2.0.jar
 ```
 
 El JAR generado incluye las dependencias necesarias. Si MongoDB no está disponible,
@@ -107,10 +107,16 @@ Para que la importación masiva de datos funcione correctamente, los archivos de
 
 ## Estado del proyecto
 
-*   **Versión actual:** 1.1.0 (Funcional).
+*   **Versión actual:** 1.2.0 (Funcional).
 *   Desarrollado inicialmente como un anteproyecto escolar enfocado en bases de datos No Relacionales.
 
 ## Historial de cambios
+
+### 1.2.0
+
+- Se reorganizó la interfaz en el paquete `com.mycompany.edureport.interfaz`.
+- Se añadieron los modos visuales Catppuccin Latte y Catppuccin Mocha.
+- Se añadió configuración opcional de MongoDB mediante variables de entorno.
 
 ### 1.1.0
 
