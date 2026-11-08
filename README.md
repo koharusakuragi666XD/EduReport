@@ -103,7 +103,7 @@ Para que la importación masiva de datos funcione correctamente, los archivos de
 - [ ] Módulo para el control de asistencia.
 - [ ] Panel de seguimiento académico detallado.
 - [ ] Estadísticas gráficas avanzadas para el sector directivo.
-- [ ] Rediseño completo de la interfaz gráfica (migración a JavaFX, una tecnología web o uso de frameworks modernos de UI).
+- [x] Rediseño completo de la interfaz gráfica (migración a JavaFX, una tecnología web o uso de frameworks modernos de UI).
 
 ## Estado del proyecto
 
