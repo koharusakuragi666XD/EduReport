@@ -27,7 +27,7 @@ EduReport es una aplicación de escritorio desarrollada en **Java Swing** diseñ
 
 Antes de comenzar, asegúrate de contar con lo siguiente:
 - **Windows 10/11**.
-- **JDK 21 LTS** instalado y `JAVA_HOME` configurado.
+- **JDK 25 LTS** instalado y `JAVA_HOME` configurado.
 - **Apache Maven 3.9+** instalado y disponible en `PATH`.
 - **MongoDB** ejecutándose localmente en el puerto predeterminado `27017`.
 
@@ -121,7 +121,7 @@ Para que la importación masiva de datos funcione correctamente, los archivos de
 ### 1.1.0
 
 - Se documentó el soporte para Windows 10/11.
-- Se cambió el requisito de Java 26 a Java 21 LTS.
+- Se actualizó el requisito de Java 21 LTS a Java 25 LTS.
 - Se agregó la generación de un JAR ejecutable con las dependencias incluidas.
 - Se mejoró el mensaje mostrado cuando MongoDB no está disponible.
 

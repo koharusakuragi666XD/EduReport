@@ -60,6 +60,10 @@ class PanelAulas extends JPanel {
                 Tema.nombreModo(), 44);
         btnTema.addActionListener(e -> ventana.alternarTema());
 
+        JButton btnCreditos = Tema.botonSecundario("Créditos");
+        btnCreditos.addActionListener(e ->
+                new DialogoCreditos(ventana).setVisible(true));
+
         JButton btnImportar = Tema.botonSecundario("Importar Excel");
         btnImportar.addActionListener(e ->
                 ImportadorExcel.importarAulasYAlumnos(ventana, servicio.aulaDAO(),
@@ -71,7 +75,8 @@ class PanelAulas extends JPanel {
                 new DialogoNuevaAula(ventana, servicio.aulaDAO(), this::recargar).setVisible(true));
 
         encabezado.add(textos, BorderLayout.WEST);
-        encabezado.add(Tema.centrado(Tema.fila(10, btnTema, btnAyuda, btnImportar, btnNueva)), BorderLayout.EAST);
+        encabezado.add(Tema.centrado(Tema.fila(
+                10, btnTema, btnAyuda, btnCreditos, btnImportar, btnNueva)), BorderLayout.EAST);
         return encabezado;
     }
 

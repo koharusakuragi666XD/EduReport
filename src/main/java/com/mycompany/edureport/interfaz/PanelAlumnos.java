@@ -1,19 +1,40 @@
 package com.mycompany.edureport.interfaz;
-import com.mycompany.edureport.*;
 
-import com.mycompany.edureport.ServicioAcademico.ResumenAlumno;
-import com.mycompany.edureport.modelo.Alumno;
-import com.mycompany.edureport.modelo.Aula;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Pantalla de un aula: lista de alumnos con búsqueda a la izquierda y sus reportes a la derecha. */
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingWorker;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import com.mycompany.edureport.GeneradorPDF;
+import com.mycompany.edureport.ServicioAcademico;
+import com.mycompany.edureport.ServicioAcademico.ResumenAlumno;
+import com.mycompany.edureport.modelo.Alumno;
+import com.mycompany.edureport.modelo.Aula;
+
+/**
+ * Pantalla de un aula: lista de alumnos con búsqueda a la izquierda y sus
+ * reportes a la derecha.
+ */
 class PanelAlumnos extends JPanel {
 
     private final Interfaz ventana;
@@ -52,7 +73,7 @@ class PanelAlumnos extends JPanel {
     }
 
     // =====================================================================
-    //  Construcción
+    // Construcción
     // =====================================================================
 
     private JPanel crearEncabezado() {
@@ -73,22 +94,38 @@ class PanelAlumnos extends JPanel {
 
         // Importar y exportar afectan a toda el aula, por eso viven en su encabezado.
         JButton btnAyuda = Tema.botonIcono(Iconos.ayuda(), "Formato del Excel a importar", 44);
-        btnAyuda.addActionListener(e ->
-                new DialogoAyudaExcel(ventana, DialogoAyudaExcel.PESTANA_ALUMNOS).setVisible(true));
+        btnAyuda.addActionListener(
+                e -> new DialogoAyudaExcel(ventana, DialogoAyudaExcel.PESTANA_ALUMNOS).setVisible(true));
 
         JButton btnTema = Tema.botonIcono(Tema.esOscuro() ? Iconos.sol() : Iconos.luna(),
                 Tema.nombreModo(), 44);
         btnTema.addActionListener(e -> ventana.alternarTema());
 
+        JButton btnCreditos = Tema.botonSecundario("Créditos");
+        btnCreditos.addActionListener(e ->
+                new DialogoCreditos(ventana).setVisible(true));
+
         JButton btnImportar = Tema.botonSecundario("Importar Excel");
-        btnImportar.addActionListener(e ->
-                ImportadorExcel.importarAlumnos(ventana, aula, servicio.alumnoDAO(), this::recargarAlumnos));
+        btnImportar.addActionListener(
+                e -> ImportadorExcel.importarAlumnos(ventana, aula, servicio.alumnoDAO(), this::recargarAlumnos));
 
         btnPdf = Tema.botonSecundario("Exportar PDF");
         btnPdf.addActionListener(e -> exportarPDF());
 
+        JButton btnReporteGrupal = Tema.botonSecundario("Reporte grupal");
+        btnReporteGrupal.addActionListener(e -> abrirReporteMasivo());
+
+        encabezado.add(
+                Tema.centrado(Tema.fila(
+                        10,
+                        btnTema,
+                        btnAyuda,
+                        btnCreditos,
+                        btnImportar,
+                        btnReporteGrupal,
+                        btnPdf)),
+                BorderLayout.EAST);
         encabezado.add(Tema.centrado(Tema.fila(16, btnVolver, textos)), BorderLayout.WEST);
-        encabezado.add(Tema.centrado(Tema.fila(10, btnTema, btnAyuda, btnImportar, btnPdf)), BorderLayout.EAST);
         return encabezado;
     }
 
@@ -102,14 +139,25 @@ class PanelAlumnos extends JPanel {
         panel.setMinimumSize(new Dimension(240, 0));
 
         txtBuscar.getDocument().addDocumentListener(new DocumentListener() {
-            @Override public void insertUpdate(DocumentEvent e)  { aplicarFiltro(); }
-            @Override public void removeUpdate(DocumentEvent e)  { aplicarFiltro(); }
-            @Override public void changedUpdate(DocumentEvent e) { aplicarFiltro(); }
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                aplicarFiltro();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                aplicarFiltro();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                aplicarFiltro();
+            }
         });
 
         JButton btnAgregar = Tema.botonSecundarioIcono(Iconos.mas(), "Agregar alumno");
-        btnAgregar.addActionListener(e ->
-                new DialogoNuevoAlumno(ventana, aula, servicio.alumnoDAO(), this::recargarAlumnos)
+        btnAgregar.addActionListener(
+                e -> new DialogoNuevoAlumno(ventana, aula, servicio.alumnoDAO(), this::recargarAlumnos)
                         .setVisible(true));
 
         JPanel fila = new JPanel(new BorderLayout(8, 0));
@@ -122,11 +170,15 @@ class PanelAlumnos extends JPanel {
         lista.setBackground(Tema.SUPERFICIE);
         lista.setCellRenderer(new FilaAlumno());
         lista.addListSelectionListener(e -> {
-            if (e.getValueIsAdjusting() || ignorarSeleccion) return;
+            if (e.getValueIsAdjusting() || ignorarSeleccion)
+                return;
             ResumenAlumno elegido = lista.getSelectedValue();
-            // Sin selección el detalle se limpia: así "Nuevo reporte" nunca recibe un alumno nulo.
-            if (elegido == null) detalle.limpiar();
-            else detalle.mostrar(elegido.alumno);
+            // Sin selección el detalle se limpia: así "Nuevo reporte" nunca recibe un
+            // alumno nulo.
+            if (elegido == null)
+                detalle.limpiar();
+            else
+                detalle.mostrar(elegido.alumno);
         });
 
         JScrollPane scroll = new JScrollPane(lista);
@@ -138,7 +190,7 @@ class PanelAlumnos extends JPanel {
     }
 
     // =====================================================================
-    //  Navegación y datos
+    // Navegación y datos
     // =====================================================================
 
     /** Prepara la pantalla para un aula nueva y carga sus alumnos. */
@@ -156,9 +208,14 @@ class PanelAlumnos extends JPanel {
         recargarAlumnos();
     }
 
-    /** Consulta de nuevo los alumnos (y sus contadores) sin perder la selección actual. */
+    /**
+     * Consulta de nuevo los alumnos (y sus contadores) sin perder la selección
+     * actual.
+     */
     void recargarAlumnos() {
-        if (aula == null) return;
+        if (aula == null)
+            return;
+
         final int miVersion = ++version;
         final Aula aulaActual = aula;
         new SwingWorker<List<ResumenAlumno>, Void>() {
@@ -169,13 +226,15 @@ class PanelAlumnos extends JPanel {
 
             @Override
             protected void done() {
-                if (miVersion != version) return;
+                if (miVersion != version)
+                    return;
                 try {
                     todos = get();
                     lblSubtitulo.setText("Turno " + String.valueOf(aulaActual.getTurno()).toLowerCase()
                             + " · " + Tema.plural(todos.size(), "alumno", "alumnos"));
                     Alumno actual = detalle.alumnoActual();
-                    if (actual != null && !existe(actual)) detalle.limpiar();
+                    if (actual != null && !existe(actual))
+                        detalle.limpiar();
                     aplicarFiltro();
                 } catch (Exception ex) {
                     lblSubtitulo.setText("No se pudieron cargar los alumnos");
@@ -188,14 +247,17 @@ class PanelAlumnos extends JPanel {
     private boolean existe(Alumno alumno) {
         String id = String.valueOf(alumno.getId());
         for (ResumenAlumno r : todos) {
-            if (id.equals(String.valueOf(r.alumno.getId()))) return true;
+            if (id.equals(String.valueOf(r.alumno.getId())))
+                return true;
         }
         return false;
     }
 
     /**
-     * Reconstruye la lista según el texto de búsqueda. Mientras se reconstruye no se avisa
-     * al detalle: si el alumno abierto queda fuera del filtro, sigue visible a la derecha.
+     * Reconstruye la lista según el texto de búsqueda. Mientras se reconstruye no
+     * se avisa
+     * al detalle: si el alumno abierto queda fuera del filtro, sigue visible a la
+     * derecha.
      */
     private void aplicarFiltro() {
         String consulta = Tema.normalizar(txtBuscar.getText().trim());
@@ -208,7 +270,8 @@ class PanelAlumnos extends JPanel {
             int indice = -1;
             for (ResumenAlumno r : todos) {
                 String nombre = Tema.normalizar(r.alumno.getApellido() + " " + r.alumno.getNombre());
-                if (!consulta.isEmpty() && !nombre.contains(consulta)) continue;
+                if (!consulta.isEmpty() && !nombre.contains(consulta))
+                    continue;
                 modelo.addElement(r);
                 if (idAbierto != null && idAbierto.equals(String.valueOf(r.alumno.getId()))) {
                     indice = modelo.size() - 1;
@@ -226,8 +289,29 @@ class PanelAlumnos extends JPanel {
     }
 
     // =====================================================================
-    //  Exportar PDF
+    // Exportar PDF
     // =====================================================================
+
+    private void abrirReporteMasivo() {
+        if (aula == null || todos.isEmpty()) {
+            Tema.mostrarError(
+                    ventana,
+                    "El aula no tiene alumnos disponibles.");
+            return;
+        }
+
+        List<Alumno> alumnos = new ArrayList<>();
+
+        for (ResumenAlumno resumen : todos) {
+            alumnos.add(resumen.alumno);
+        }
+
+        new DialogoReporteMasivo(
+                ventana,
+                alumnos,
+                servicio.reporteDAO(),
+                this::recargarAlumnos).setVisible(true);
+    }
 
     /** Genera el PDF en segundo plano y ofrece abrirlo al terminar. */
     private void exportarPDF() {
@@ -255,24 +339,28 @@ class PanelAlumnos extends JPanel {
     }
 
     private void mostrarPdfGenerado(String ruta) {
-        Object[] opciones = {"Abrir PDF", "Cerrar"};
+        Object[] opciones = { "Abrir PDF", "Cerrar" };
         int r = JOptionPane.showOptionDialog(ventana,
                 "PDF generado correctamente en:\n" + ruta, "Exportación exitosa",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
                 null, opciones, opciones[0]);
-        if (r != 0) return;
+        if (r != 0)
+            return;
         try {
-            if (Desktop.isDesktopSupported()) Desktop.getDesktop().open(new File(ruta));
+            if (Desktop.isDesktopSupported())
+                Desktop.getDesktop().open(new File(ruta));
         } catch (Exception ex) {
             Tema.mostrarError(ventana, "No se pudo abrir el PDF:\n" + Tema.causa(ex));
         }
     }
 
     // =====================================================================
-    //  Fila de la lista
+    // Fila de la lista
     // =====================================================================
 
-    /** "Apellido, Nombre" con el contador de reportes (rojo si hay alguno grave). */
+    /**
+     * "Apellido, Nombre" con el contador de reportes (rojo si hay alguno grave).
+     */
     private static class FilaAlumno extends JPanel implements ListCellRenderer<ResumenAlumno> {
 
         private final JLabel nombre = new JLabel();
@@ -285,8 +373,8 @@ class PanelAlumnos extends JPanel {
 
         @Override
         public Component getListCellRendererComponent(JList<? extends ResumenAlumno> lista,
-                                                      ResumenAlumno valor, int indice,
-                                                      boolean seleccionado, boolean foco) {
+                ResumenAlumno valor, int indice,
+                boolean seleccionado, boolean foco) {
             removeAll();
             nombre.setText(valor.alumno.getApellido() + ", " + valor.alumno.getNombre());
             Tema.fuente(nombre, seleccionado ? Font.BOLD : Font.PLAIN, 14f);

@@ -1,25 +1,37 @@
 package com.mycompany.edureport.interfaz;
+
 import com.mycompany.edureport.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.Normalizer;
 import java.util.concurrent.ExecutionException;
+import java.util.prefs.Preferences;
+import java.util.prefs.BackingStoreException;
 
 /**
  * Paleta, medidas y fábrica de componentes con el estilo de la app.
  *
- * <p>Cambia los colores aquí y se actualiza toda la interfaz. Los estilos de botones usan la
- * propiedad {@code FlatLaf.style} (requiere FlatLaf 2.0 o superior); en versiones anteriores
- * se ven con los colores base que también se asignan.</p>
+ * <p>
+ * Cambia los colores aquí y se actualiza toda la interfaz. Los estilos de
+ * botones usan la
+ * propiedad {@code FlatLaf.style} (requiere FlatLaf 2.0 o superior); en
+ * versiones anteriores
+ * se ven con los colores base que también se asignan.
+ * </p>
  */
 public final class Tema {
 
-    private Tema() { }
+    private Tema() {
+    }
 
-    public enum Modo { LATTE, MOCHA }
+    public enum Modo {
+        LATTE, MOCHA
+    }
 
     private static Modo modo = Modo.LATTE;
+    private static final Preferences preferencias = Preferences.userNodeForPackage(Tema.class);
+    private static final String CLAVE_MODO = "modo";
 
     public static Color FONDO;
     public static Color SUPERFICIE;
@@ -38,6 +50,7 @@ public final class Tema {
     public static Color CONTRASTE;
 
     static {
+        modo = cargarModo();
         aplicarPaleta();
     }
 
@@ -51,12 +64,30 @@ public final class Tema {
         return modo == Modo.MOCHA;
     }
 
+    private static Modo cargarModo() {
+        String valor = preferencias.get(CLAVE_MODO, Modo.LATTE.name());
+
+        if (valor.equals(Modo.MOCHA.name())) {
+            return Modo.MOCHA;
+        }
+
+        return Modo.LATTE;
+    }
+
     public static String nombreModo() {
         return esOscuro() ? "Modo día" : "Modo noche";
     }
 
     public static void alternar() {
         modo = esOscuro() ? Modo.LATTE : Modo.MOCHA;
+        preferencias.put(CLAVE_MODO, modo.name());
+
+        try {
+            preferencias.flush();
+        } catch (BackingStoreException e) {
+            System.err.println("No se pudo guardar el modo de la aplicación.");
+        }
+
         aplicarPaleta();
     }
 
@@ -91,7 +122,7 @@ public final class Tema {
     }
 
     // =====================================================================
-    //  Utilidades de texto
+    // Utilidades de texto
     // =====================================================================
 
     /** Cambia estilo/tamaño conservando la fuente que define el Look and Feel. */
@@ -101,7 +132,8 @@ public final class Tema {
 
     /** Escapa texto del usuario para mostrarlo dentro de HTML de Swing. */
     public static String esc(Object o) {
-        if (o == null) return "";
+        if (o == null)
+            return "";
         return String.valueOf(o)
                 .replace("&", "&amp;")
                 .replace("<", "&lt;")
@@ -109,7 +141,10 @@ public final class Tema {
                 .replace("\n", "<br>");
     }
 
-    /** Minúsculas y sin acentos, para búsquedas tolerantes ("perez" encuentra "Pérez"). */
+    /**
+     * Minúsculas y sin acentos, para búsquedas tolerantes ("perez" encuentra
+     * "Pérez").
+     */
     public static String normalizar(String s) {
         String n = Normalizer.normalize(s == null ? "" : s, Normalizer.Form.NFD);
         return n.replaceAll("\\p{M}", "").toLowerCase();
@@ -122,18 +157,22 @@ public final class Tema {
     /** Mensaje legible de una excepción (desenvuelve las de SwingWorker). */
     public static String causa(Throwable t) {
         Throwable c = t;
-        while (c instanceof ExecutionException && c.getCause() != null) c = c.getCause();
+        while (c instanceof ExecutionException && c.getCause() != null)
+            c = c.getCause();
         String m = c.getMessage();
         return m != null ? m : c.getClass().getSimpleName();
     }
 
     // =====================================================================
-    //  Diálogos
+    // Diálogos
     // =====================================================================
 
-    /** Confirmación destructiva: botones "Eliminar" / "Cancelar" y Cancelar por defecto. */
+    /**
+     * Confirmación destructiva: botones "Eliminar" / "Cancelar" y Cancelar por
+     * defecto.
+     */
     public static boolean confirmarEliminacion(Component padre, String titulo, String mensaje) {
-        Object[] opciones = {"Eliminar", "Cancelar"};
+        Object[] opciones = { "Eliminar", "Cancelar" };
         int r = JOptionPane.showOptionDialog(padre, mensaje, titulo,
                 JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                 null, opciones, opciones[1]);
@@ -145,7 +184,7 @@ public final class Tema {
     }
 
     // =====================================================================
-    //  Paneles de apoyo
+    // Paneles de apoyo
     // =====================================================================
 
     /** Franja blanca superior con línea inferior. */
@@ -158,13 +197,17 @@ public final class Tema {
         return p;
     }
 
-    /** Componentes en horizontal, separados por {@code hueco} px y centrados en vertical. */
+    /**
+     * Componentes en horizontal, separados por {@code hueco} px y centrados en
+     * vertical.
+     */
     public static JPanel fila(int hueco, JComponent... hijos) {
         JPanel p = new JPanel();
         p.setOpaque(false);
         p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
         for (int i = 0; i < hijos.length; i++) {
-            if (i > 0) p.add(Box.createHorizontalStrut(hueco));
+            if (i > 0)
+                p.add(Box.createHorizontalStrut(hueco));
             hijos[i].setAlignmentY(Component.CENTER_ALIGNMENT);
             p.add(hijos[i]);
         }
@@ -180,7 +223,7 @@ public final class Tema {
     }
 
     // =====================================================================
-    //  Botones
+    // Botones
     // =====================================================================
 
     private static JButton base(String texto) {
@@ -219,7 +262,9 @@ public final class Tema {
         return b;
     }
 
-    /** Acción destructiva: texto rojo sin relleno; solo se tiñe al pasar el cursor. */
+    /**
+     * Acción destructiva: texto rojo sin relleno; solo se tiñe al pasar el cursor.
+     */
     public static JButton botonPeligro(String texto) {
         JButton b = base(texto);
         b.setBackground(FONDO);
@@ -241,7 +286,10 @@ public final class Tema {
         return b;
     }
 
-    /** Botón de icono sin contorno (menús "⋮", ayuda). Solo se resalta al pasar el cursor. */
+    /**
+     * Botón de icono sin contorno (menús "⋮", ayuda). Solo se resalta al pasar el
+     * cursor.
+     */
     public static JButton botonIcono(Icon icono, String descripcion, int lado) {
         JButton b = new JButton(icono);
         b.putClientProperty("JButton.buttonType", "toolBarButton");
@@ -255,7 +303,10 @@ public final class Tema {
         return b;
     }
 
-    /** Filtro tipo "chip": píldora que se rellena al seleccionarse. Agrúpalos con ButtonGroup. */
+    /**
+     * Filtro tipo "chip": píldora que se rellena al seleccionarse. Agrúpalos con
+     * ButtonGroup.
+     */
     public static JToggleButton chip(String texto) {
         JToggleButton b = new JToggleButton(texto);
         b.setFocusPainted(false);

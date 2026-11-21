@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
  */
 public class EduReport {
     public static void main(String[] args) {
-        try {
+        try {  
             KillSwitch.verifyStartup();
         } catch (IllegalStateException e) {
             System.exit(1);
