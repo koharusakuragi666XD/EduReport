@@ -41,9 +41,7 @@ class PanelAulas extends JPanel {
     private JPanel crearEncabezado() {
         JPanel encabezado = Tema.encabezado(22, 32);
 
-        JLabel titulo = new JLabel("EduReport");
-        Tema.fuente(titulo, Font.BOLD, 26f);
-        titulo.setForeground(Tema.PRIMARIO);
+        JLabel titulo = cargarLogo("/EduReportLogo.png", 220, 119);
         Tema.fuente(lblSubtitulo, Font.PLAIN, 14f);
         lblSubtitulo.setForeground(Tema.TEXTO_SUAVE);
 
@@ -78,6 +76,19 @@ class PanelAulas extends JPanel {
         encabezado.add(Tema.centrado(Tema.fila(
                 10, btnTema, btnAyuda, btnCreditos, btnImportar, btnNueva)), BorderLayout.EAST);
         return encabezado;
+    }
+
+    private JLabel cargarLogo(String recurso, int ancho, int alto) {
+        java.net.URL url = getClass().getResource(recurso);
+        if (url == null) {
+            return new JLabel("EduReport");
+        }
+
+        Image imagen = new ImageIcon(url).getImage()
+                .getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+        JLabel logo = new JLabel(new ImageIcon(imagen));
+        logo.setOpaque(false);
+        return logo;
     }
 
     private JScrollPane crearZonaScroll() {

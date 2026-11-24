@@ -58,6 +58,10 @@ public class Interfaz extends JFrame {
         construirVistas();
 
         setTitle("EduReport");
+        java.net.URL iconoUrl = getClass().getResource("/EduReportIsotipo.png");
+        if (iconoUrl != null) {
+            setIconImage(new ImageIcon(iconoUrl).getImage());
+        }
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 650);
         setMinimumSize(new Dimension(800, 500));

@@ -35,9 +35,7 @@ public class DialogoCreditos extends JDialog {
         contenido.setOpaque(false);
         contenido.setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
 
-        JLabel titulo = new JLabel("EduReport");
-        Tema.fuente(titulo, Font.BOLD, 22f);
-        titulo.setForeground(Tema.PRIMARIO);
+        JLabel titulo = cargarLogo("/EduReportLogo.png", 220, 119);
         titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel desarrollador = crearLinea("Desarrollado por: Sergio Said López Calvario");
@@ -95,6 +93,20 @@ public class DialogoCreditos extends JDialog {
         etiqueta.setForeground(Tema.TEXTO);
         etiqueta.setAlignmentX(Component.CENTER_ALIGNMENT);
         return etiqueta;
+    }
+
+    private JLabel cargarLogo(String recurso, int ancho, int alto) {
+        java.net.URL url = getClass().getResource(recurso);
+        if (url == null) {
+            JLabel etiqueta = new JLabel("EduReport");
+            Tema.fuente(etiqueta, Font.BOLD, 22f);
+            etiqueta.setForeground(Tema.PRIMARIO);
+            return etiqueta;
+        }
+
+        Image imagen = new ImageIcon(url).getImage()
+                .getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+        return new JLabel(new ImageIcon(imagen));
     }
 
     private static ImageIcon cargarIcono(String recursoOscuro, String recursoClaro) {
